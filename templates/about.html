@@ -1,0 +1,28 @@
+{% extends "index.html" %} {% block content %}
+<div class="container py-5">
+  <div class="card bg-dark text-light shadow-lg border-success">
+    <div class="card-header bg-success text-dark">
+      <h3 class="mb-0">
+        <i class="fas fa-info-circle me-2"></i>About This Project
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>
+        The <strong>Host Discovery App</strong> is a Flask-based web application
+        that scans a given subnet and identifies active hosts on the network.
+      </p>
+      <p>
+        Developed by <strong>Darshan</strong> as a Final Year BCA Project, it
+        uses Python, Bootstrap, and Flask. It supports real-time network pinging
+        and a visually attractive frontend.
+      </p>
+      <ul>
+        <li>Framework: Flask</li>
+        <li>Frontend: Bootstrap 5, FontAwesome, Google Fonts</li>
+        <li>Scanning: Python IP + subprocess ping</li>
+      </ul>
+      <p class="mt-3">© THANK YOU</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Host Discovery App</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/a2d9d6f01f.js" crossorigin="anonymous"></script>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-color: #0e0e0e;
+      --text-color: #e0e0e0;
+      --card-bg: #1a1a1a;
+      --input-bg: #2c2c2c;
+      --input-border: #444;
+      --neon-color: #00ffae;
+      --hover-color: #00e69c;
+      --alert-bg: #ff4d4d;
+      --link-color: #000;
+      --list-bg: #2a2a2a;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: "Orbitron", sans-serif;
+      opacity: 0;
+      transition: opacity 1s ease-in;
+      cursor: url('https://cdn.jsdelivr.net/gh/saadeghi/assets@main/pixel-cursor.png') 16 16, auto;
+      position: relative;
+    }
+
+    body.loaded {
+      opacity: 1;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: linear-gradient(-45deg, #0e0e0e, #00ffae, #1a1a1a, #2c2c2c);
+      background-size: 400% 400%;
+      animation: gradientMove 15s ease infinite;
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(0, 255, 174, 0.25) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: floatGlow 10s ease-in-out infinite alternate;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    @keyframes gradientMove {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    @keyframes floatGlow {
+      0% {
+        transform: translate(-50%, 0);
+        opacity: 0.3;
+      }
+
+      100% {
+        transform: translate(-50%, 20px);
+        opacity: 0.6;
+      }
+    }
+
+    .navbar {
+      background-color: var(--neon-color);
+    }
+
+    .navbar-brand,
+    .nav-link {
+      color: var(--link-color) !important;
+      font-weight: bold;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 1rem;
+      border: 1px solid var(--neon-color);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 0 10px var(--neon-color);
+    }
+
+    .card-header {
+      background: var(--neon-color);
+      color: #000;
+      font-weight: bold;
+    }
+
+    .form-label {
+      color: #ccc;
+      transition: color 0.3s;
+    }
+
+    .form-control {
+      background: var(--input-bg);
+      color: #fff;
+      border: 1px solid var(--input-border);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .form-control:focus {
+      border-color: var(--neon-color);
+      box-shadow: 0 0 5px var(--neon-color);
+    }
+
+    .btn-custom {
+      position: relative;
+      overflow: hidden;
+      background-color: var(--neon-color);
+      border: none;
+      color: #000;
+      font-weight: bold;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    .btn-custom:hover {
+      background-color: var(--hover-color);
+      transform: scale(1.03);
+      box-shadow: 0 0 10px var(--hover-color);
+    }
+
+    .btn-custom::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(0, 255, 174, 0.6);
+      opacity: 0;
+      border-radius: 50%;
+      transform: scale(1);
+      transition: opacity 0.4s, transform 0.4s;
+      pointer-events: none;
+    }
+
+    .btn-custom:active::after {
+      opacity: 1;
+      transform: scale(20);
+      transition: 0s;
+      top: var(--y);
+      left: var(--x);
+    }
+
+    .loader {
+      border: 6px solid #222;
+      border-top: 6px solid var(--neon-color);
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      animation: spin 1s linear infinite;
+      margin: auto;
+      box-shadow: 0 0 15px var(--neon-color);
+    }
+
+    .list-group-item {
+      background: var(--list-bg);
+      color: var(--text-color);
+      border: 1px solid var(--input-border);
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .list-group-item:hover {
+      background: #333;
+      transform: scale(1.01);
+      box-shadow: 0 0 6px var(--neon-color);
+    }
+
+    .alert-danger {
+      background-color: var(--alert-bg);
+      color: #000;
+      border: none;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: 2px solid var(--link-color);
+      color: var(--link-color);
+      border-radius: 50%;
+      padding: 10px;
+      font-size: 20px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .theme-toggle:hover {
+      background: var(--link-color);
+      color: var(--neon-color);
+    }
+
+    .theme-toggle i {
+      transition: transform 0.3s ease;
+    }
+
+    .theme-toggle:hover i {
+      transform: scale(1.2);
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="#"><i class="fas fa-microchip me-2"></i>Host Discovery App</a>
+      <div class="d-flex align-items-center ms-auto">
+        <button class="theme-toggle me-3" onclick="toggleTheme()">
+          <i id="theme-icon" class="fas fa-sun"></i>
+        </button>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-home me-1"></i>Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fas fa-info-circle me-1"></i>Info</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow-lg">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <h4 class="mb-0"><i class="fas fa-network-wired me-2"></i>Network Scanner</h4>
+          </div>
+          <div class="card-body">
+            <form method="POST" onsubmit="showLoader()">
+              <div class="mb-3">
+                <label for="subnet" class="form-label">IP/Subnet (e.g., 192.168.1.0/24):</label>
+                <input type="text" class="form-control" id="subnet" name="subnet" placeholder="192.168.0.0/24"
+                  required />
+              </div>
+              <button type="submit" class="btn btn-custom w-100">
+                <i class="fas fa-search me-2"></i>Scan Network
+              </button>
+            </form>
+
+            <div id="loader" class="text-center mt-4" style="display: none">
+              <div class="loader"></div>
+              <p class="mt-2 text-white">Scanning for active hosts...</p>
+            </div>
+
+            {% if error %}
+            <div class="alert alert-danger mt-4">{{ error }}</div>
+            {% endif %}
+
+            {% if hosts %}
+            <div class="mt-4">
+              <h5 class="text-light">
+                Active Hosts in <span class="text-success">{{ subnet }}</span>:
+              </h5>
+              <ul class="list-group mt-3">
+                {% for host in hosts %}
+                <li class="list-group-item d-flex align-items-center">
+                  <i class="fas fa-desktop text-neon me-2"></i> {{ host }}
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('load', () => {
+      document.body.classList.add('loaded');
+    });
+
+    function showLoader() {
+      document.getElementById("loader").style.display = "block";
+    }
+
+    function toggleTheme() {
+      const root = document.documentElement;
+      const themeIcon = document.getElementById("theme-icon");
+      const formLabels = document.querySelectorAll('.form-label');
+      const listItems = document.querySelectorAll('.list-group-item');
+
+      const currentBg = getComputedStyle(root).getPropertyValue('--bg-color').trim();
+
+      if (currentBg === '#0e0e0e') {
+        root.style.setProperty('--bg-color', '#ffffff');
+        root.style.setProperty('--text-color', '#000000');
+        root.style.setProperty('--card-bg', '#f8f9fa');
+        root.style.setProperty('--input-bg', '#ffffff');
+        root.style.setProperty('--input-border', '#ccc');
+        root.style.setProperty('--link-color', '#000');
+        root.style.setProperty('--list-bg', '#f0f0f0');
+        themeIcon.classList.replace("fa-sun", "fa-moon");
+        formLabels.forEach(label => label.style.color = '#000000');
+        listItems.forEach(item => {
+          item.style.backgroundColor = '#f0f0f0';
+          item.style.color = '#000000';
+        });
+      } else {
+        root.style.setProperty('--bg-color', '#0e0e0e');
+        root.style.setProperty('--text-color', '#e0e0e0');
+        root.style.setProperty('--card-bg', '#1a1a1a');
+        root.style.setProperty('--input-bg', '#2c2c2c');
+        root.style.setProperty('--input-border', '#444');
+        root.style.setProperty('--link-color', '#000');
+        root.style.setProperty('--list-bg', '#2a2a2a');
+        themeIcon.classList.replace("fa-moon", "fa-sun");
+        formLabels.forEach(label => label.style.color = '#ccc');
+        listItems.forEach(item => {
+          item.style.backgroundColor = '#2a2a2a';
+          item.style.color = '#e0e0e0';
+        });
+      }
+    }
+
+    document.querySelectorAll('.btn-custom').forEach(btn => {
+      btn.addEventListener('click', function (e) {
+        const rect = this.getBoundingClientRect();
+        this.style.setProperty('--x', `${e.clientX - rect.left}px`);
+        this.style.setProperty('--y', `${e.clientY - rect.top}px`);
+      });
+    });
+  </script>
+</body>
+
+</html>
